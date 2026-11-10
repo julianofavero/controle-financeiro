@@ -447,20 +447,92 @@
   /* ================= tema ================= */
   const THEMES = ['auto', 'light', 'dark'];
   const THEME_NAMES = { auto: 'auto', light: 'claro', dark: 'escuro' };
-  function applyTheme() {
-    const t = S.state.theme;
+  function applyTheme(t) {
     if (t === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
     $('#theme-label').textContent = 'Tema: ' + THEME_NAMES[t];
   }
   $('#theme-btn').addEventListener('click', () => {
     S.setTheme(THEMES[(THEMES.indexOf(S.state.theme) + 1) % THEMES.length]);
-    applyTheme();
+    applyTheme(S.state.theme);
+  });
+  applyTheme(A.localTheme.get()); // vale já na tela de login
+
+  /* ================= conta ================= */
+  const menu = $('#usermenu');
+  document.addEventListener('click', (e) => { if (!menu.contains(e.target)) menu.open = false; });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') menu.open = false; });
+
+  $('#btn-logout').addEventListener('click', async () => {
+    menu.open = false;
+    await S.flush(); // não perde gravações em andamento
+    await A.api.signOut();
+    location.hash = '';
+    location.reload();
   });
 
-  /* ================= início ================= */
-  S.onChange(render);
-  window.addEventListener('hashchange', render);
-  applyTheme();
-  render();
+  const pwDlg = $('#pw-dialog');
+  const pwForm = $('#pw-form');
+  $('#btn-change-pw').addEventListener('click', () => {
+    menu.open = false;
+    pwForm.reset();
+    $('#pw-error').hidden = true;
+    pwDlg.showModal();
+    pwForm.elements.current.focus();
+  });
+  $('#pw-cancel').addEventListener('click', () => pwDlg.close());
+  pwForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = pwForm.elements;
+    const err = $('#pw-error');
+    const fail = (msg) => { err.textContent = msg; err.hidden = false; };
+    err.hidden = true;
+    if (f.next.value.length < 8) return fail('A nova senha precisa ter pelo menos 8 caracteres.');
+    if (f.next.value !== f.again.value) return fail('As senhas novas não são iguais.');
+    if (f.next.value === f.current.value) return fail('A nova senha precisa ser diferente da atual.');
+    const btn = $('#pw-save');
+    btn.disabled = true;
+    try {
+      await A.api.changePassword(profile.username, f.current.value, f.next.value);
+      pwDlg.close();
+      toast('Senha alterada');
+    } catch (ex) {
+      fail(ex.status === 400 || ex.status === 401 ? 'A senha atual está incorreta.' : ex.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* ================= início (chamado após o login) ================= */
+  A.ui = { toast, download };
+
+  S.onError((err) => {
+    if (err && err.status === 401) return; // sessão expirada: o login cuida disso
+    toast('Não consegui salvar no servidor. Atualizando seus dados…');
+    S.reload();
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (S.pending > 0) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  A.start = function (me) {
+    profile = me;
+    A.admin.setSelf(me.id);
+    const name = me.display_name || me.username;
+    $('#um-name').textContent = name;
+    $('#um-user').textContent = '@' + me.username + (isAdmin() ? ' · administrador' : '');
+    $('#um-short').textContent = name.split(/\s+/)[0];
+    $('#um-avatar').textContent = name.charAt(0).toUpperCase();
+    $('#nav-usuarios').hidden = !isAdmin();
+
+    S.onChange(render);
+    window.addEventListener('hashchange', render);
+    // ao voltar para a aba, relê do servidor (dados podem ter mudado em outro aparelho)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && S.pending === 0) S.reload();
+    });
+    applyTheme(S.state.theme);
+    render();
+  };
 })();
