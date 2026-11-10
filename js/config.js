@@ -8,7 +8,7 @@
  */
 window.APP_CONFIG = {
   supabaseUrl: 'https://ecfadtawqnjiyvjqpkvt.supabase.co',
-  supabaseKey: 'COLE_AQUI_A_CHAVE_PUBLICAVEL',
+  supabaseKey: 'sb_publishable_R2LN8GEdjxjPJilA8rNSAA_iKezk29F',
   // O login é "usuário"; por baixo vira "usuário@emailDomain" no Supabase Auth.
   // Precisa ser igual à constante EMAIL_DOMAIN da função admin-users.
   emailDomain: 'usuarios.controle-financeiro.app',
