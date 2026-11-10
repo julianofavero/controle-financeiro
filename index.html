@@ -261,8 +261,84 @@
         </div>
       </div>
     </section>
+
+    <!-- ============ USUÁRIOS (só administrador) ============ -->
+    <section class="view" id="view-usuarios" hidden>
+      <div class="card settings">
+        <h2>Criar usuário</h2>
+        <p class="muted">Cada usuário entra com o próprio login e vê só os próprios dados. Passe a senha para a pessoa; ela pode trocá-la depois em "Alterar senha".</p>
+        <form id="user-form" class="row" autocomplete="off">
+          <label>Nome
+            <input type="text" name="display_name" maxlength="80" placeholder="Ex.: Maria Souza">
+          </label>
+          <label>Usuário (login)
+            <input type="text" name="username" maxlength="32" required autocapitalize="none" spellcheck="false" placeholder="ex.: maria">
+          </label>
+          <label>Senha (mín. 8)
+            <input type="password" name="password" minlength="8" maxlength="72" required autocomplete="new-password">
+          </label>
+          <label>Perfil
+            <select name="role">
+              <option value="user">Usuário</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </label>
+          <button type="button" class="btn" id="user-gen">Gerar senha</button>
+          <button type="submit" class="btn primary" id="user-create">Criar usuário</button>
+        </form>
+        <p class="form-error" id="user-error" role="alert" hidden></p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Usuários</h2>
+            <p class="muted" id="users-sub">Contas com acesso ao sistema</p>
+          </div>
+          <button type="button" class="btn small" id="users-refresh">Atualizar</button>
+        </div>
+        <ul class="users" id="users"></ul>
+      </div>
+    </section>
   </main>
 </div>
+
+<!-- ============ ALTERAR MINHA SENHA ============ -->
+<dialog id="pw-dialog" aria-labelledby="pw-title">
+  <form id="pw-form" class="dform" autocomplete="off">
+    <h2 id="pw-title">Alterar senha</h2>
+    <label>Senha atual
+      <input type="password" name="current" autocomplete="current-password" maxlength="72" required>
+    </label>
+    <label>Nova senha (mín. 8)
+      <input type="password" name="next" autocomplete="new-password" minlength="8" maxlength="72" required>
+    </label>
+    <label>Repita a nova senha
+      <input type="password" name="again" autocomplete="new-password" minlength="8" maxlength="72" required>
+    </label>
+    <p class="form-error" id="pw-error" role="alert" hidden></p>
+    <div class="row end">
+      <button type="button" class="btn" id="pw-cancel">Cancelar</button>
+      <button type="submit" class="btn primary" id="pw-save">Salvar senha</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ REDEFINIR SENHA DE OUTRO USUÁRIO (admin) ============ -->
+<dialog id="upw-dialog" aria-labelledby="upw-title">
+  <form id="upw-form" class="dform" autocomplete="off">
+    <h2 id="upw-title">Redefinir senha</h2>
+    <p class="muted" id="upw-who"></p>
+    <label>Nova senha (mín. 8)
+      <input type="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+    </label>
+    <p class="form-error" id="upw-error" role="alert" hidden></p>
+    <div class="row end">
+      <button type="button" class="btn" id="upw-gen">Gerar senha</button>
+      <button type="button" class="btn" id="upw-cancel">Cancelar</button>
+      <button type="submit" class="btn primary" id="upw-save">Salvar</button>
+    </div>
+  </form>
 
 <!-- ============ FORMULÁRIO DE LANÇAMENTO ============ -->
 <dialog id="tx-dialog" aria-labelledby="tx-title">
