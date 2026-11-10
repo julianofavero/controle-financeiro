@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle Financeiro</title>
+  <meta name="description" content="Controle de entradas e saídas com dashboard, avisos e projeção dos próximos meses.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M8 21l5-6 4 3 7-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28"><rect width="32" height="32" rx="8" fill="var(--s-in)"/><path d="M8 21l5-6 4 3 7-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="brand-name">Controle<br>Financeiro</span>
+    </div>
+
+    <nav class="nav" aria-label="Principal">
+      <a href="#dashboard" data-view="dashboard">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v9H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 15h7v5H4z"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#lancamentos" data-view="lancamentos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg>
+        <span>Lançamentos</span>
+      </a>
+      <a href="#orcamentos" data-view="orcamentos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>
+        <span>Orçamentos</span>
+      </a>
+      <a href="#ajustes" data-view="ajustes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+        <span>Ajustes</span>
+      </a>
+    </nav>
+
+    <button type="button" class="theme-btn" id="theme-btn" aria-label="Alternar tema">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+      <span id="theme-label">Tema: auto</span>
+    </button>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div>
+        <h1 id="page-title">Dashboard</h1>
+        <p class="muted" id="page-sub"></p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" data-new="in"><span class="dot dot-in"></span>Entrada</button>
+        <button type="button" class="btn" data-new="out"><span class="dot dot-out"></span>Saída</button>
+      </div>
+    </header>
+
+    <!-- ============ DASHBOARD ============ -->
+    <section class="view" id="view-dashboard" hidden>
+      <div class="card empty" id="dash-empty" hidden>
+        <h2>Comece lançando seus valores</h2>
+        <p>Registre a primeira entrada ou saída para o dashboard mostrar gráficos, avisos e a projeção dos próximos meses. Quer só ver como funciona? Carregue dados de exemplo.</p>
+        <div class="row">
+          <button type="button" class="btn primary" data-new="in">Lançar entrada</button>
+          <button type="button" class="btn primary" data-new="out">Lançar saída</button>
+          <button type="button" class="btn" id="btn-sample">Carregar dados de exemplo</button>
+        </div>
+      </div>
+
+      <div id="dash-content">
+        <div class="kpis" id="kpis"></div>
+
+        <div class="grid-main">
+          <div class="stack">
+          <article class="card" id="card-flow">
+            <div class="card-head">
+              <div>
+                <h2>Entradas e saídas por mês</h2>
+                <p class="muted">Meses reais e projeção dos próximos 6</p>
+              </div>
+              <button type="button" class="btn small toggle" aria-pressed="false">Ver tabela</button>
+            </div>
+            <ul class="legend" aria-label="Legenda">
+              <li><span class="sw sw-in"></span>Entradas</li>
+              <li><span class="sw sw-out"></span>Saídas</li>
+              <li><span class="sw sw-hatch"></span>Projeção</li>
+            </ul>
+            <div class="chart-box" id="chart-flow"></div>
+            <div class="table-box" hidden></div>
+          </article>
+
+          <article class="card" id="card-balance">
+            <div class="card-head">
+              <div>
+                <h2>Saldo acumulado e tendência</h2>
+                <p class="muted">Fim de cada mês; a faixa mostra a incerteza da projeção</p>
+              </div>
+              <button type="button" class="btn small toggle" aria-pressed="false">Ver tabela</button>
+            </div>
+            <ul class="legend" aria-label="Legenda">
+              <li><span class="sw sw-line"></span>Saldo real</li>
+              <li><span class="sw sw-dash"></span>Projeção</li>
+              <li><span class="sw sw-band"></span>Faixa provável</li>
+            </ul>
+            <div class="chart-box" id="chart-balance"></div>
+            <div class="table-box" hidden></div>
+          </article>
+
+          </div>
+          <div class="stack">
+          <article class="card" id="card-alerts">
+            <div class="card-head">
+              <div>
+                <h2>Avisos</h2>
+                <p class="muted">O que merece atenção agora</p>
+              </div>
+            </div>
+            <ul class="alerts" id="alerts"></ul>
+          </article>
+
+          <article class="card" id="card-cats">
+            <div class="card-head">
+              <div>
+                <h2>Saídas por categoria</h2>
+                <p class="muted" id="cats-sub">Mês atual</p>
+              </div>
+            </div>
+            <div id="chart-cats"></div>
+          </article>
+          </div>
+        </div>
+
+        <h2 class="section-title">Tendências para os próximos meses</h2>
+        <div class="kpis" id="trends"></div>
+        <p class="muted note" id="forecast-note"></p>
+      </div>
+    </section>
+
+    <!-- ============ LANÇAMENTOS ============ -->
+    <section class="view" id="view-lancamentos" hidden>
+      <div class="card filters">
+        <label>Mês
+          <select id="f-month"></select>
+        </label>
+        <label>Tipo
+          <select id="f-type">
+            <option value="">Todos</option>
+            <option value="in">Entradas</option>
+            <option value="out">Saídas</option>
+          </select>
+        </label>
+        <label class="grow">Buscar
+          <input type="search" id="f-query" placeholder="Descrição ou categoria">
+        </label>
+        <button type="button" class="btn" data-xlsx="export">Exportar XLSX</button>
+        <button type="button" class="btn" data-xlsx="import">Importar XLSX</button>
+      </div>
+
+      <div class="card">
+        <div class="sums" id="tx-sums"></div>
+        <ul class="tx-list" id="tx-list"></ul>
+      </div>
+    </section>
+
+    <!-- ============ ORÇAMENTOS ============ -->
+    <section class="view" id="view-orcamentos" hidden>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Limite mensal por categoria</h2>
+            <p class="muted" id="bud-sub">Defina quanto pretende gastar. Você recebe aviso ao passar de 80%.</p>
+          </div>
+        </div>
+        <ul class="budgets" id="budgets"></ul>
+      </div>
+    </section>
+
+    <!-- ============ AJUSTES ============ -->
+    <section class="view" id="view-ajustes" hidden>
+      <div class="card settings">
+        <h2>Saldo inicial</h2>
+        <p class="muted">Quanto você tinha antes do primeiro lançamento. Ele é somado ao saldo e à projeção.</p>
+        <div class="row">
+          <label>Valor (R$)
+            <input type="number" id="opening" step="0.01" inputmode="decimal">
+          </label>
+        </div>
+      </div>
+
+      <div class="card settings">
+        <h2>Planilha Excel (XLSX)</h2>
+        <p class="muted">Gere uma planilha com seus lançamentos, resumo mensal, orçamentos e saldo inicial. Ou preencha uma planilha no Excel e importe aqui para trazer os dados.</p>
+        <div class="row">
+          <button type="button" class="btn primary" data-xlsx="export">Gerar planilha com meus dados</button>
+          <button type="button" class="btn" data-xlsx="import">Importar planilha…</button>
+          <button type="button" class="btn" data-xlsx="template">Baixar modelo para preencher</button>
+        </div>
+        <input type="file" id="file-xlsx" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+      </div>
+
+      <div class="card settings">
+        <h2>Seus dados</h2>
+        <p class="muted">Tudo fica salvo só neste navegador. Faça backup de vez em quando.</p>
+        <div class="row">
+          <button type="button" class="btn" id="btn-export-json">Baixar backup (JSON)</button>
+          <button type="button" class="btn" id="btn-export-csv">Exportar planilha (CSV)</button>
+          <button type="button" class="btn" id="btn-import">Restaurar backup…</button>
+          <input type="file" id="file-import" accept="application/json,.json" hidden>
+        </div>
+      </div>
+
+      <div class="card settings">
+        <h2>Zona de risco</h2>
+        <div class="row">
+          <button type="button" class="btn" id="btn-sample-2">Carregar dados de exemplo</button>
+          <button type="button" class="btn danger" id="btn-reset">Apagar todos os dados</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ FORMULÁRIO DE LANÇAMENTO ============ -->
+<dialog id="tx-dialog" aria-labelledby="tx-title">
+  <form id="tx-form" autocomplete="off">
+    <h2 id="tx-title">Novo lançamento</h2>
+
+    <div class="seg" role="radiogroup" aria-label="Tipo">
+      <label><input type="radio" name="type" value="in" checked><span><i class="dot dot-in"></i>Entrada</span></label>
+      <label><input type="radio" name="type" value="out"><span><i class="dot dot-out"></i>Saída</span></label>
+    </div>
+
+    <label>Descrição
+      <input type="text" name="desc" maxlength="80" required placeholder="Ex.: Salário, Mercado, Aluguel">
+    </label>
+
+    <div class="two">
+      <label>Valor (R$)
+        <input type="number" name="value" step="0.01" min="0.01" inputmode="decimal" required placeholder="0,00">
+      </label>
+      <label>Data
+        <input type="date" name="date" required>
+      </label>
+    </div>
+
+    <label>Categoria
+      <select name="category"></select>
+    </label>
+
+    <label class="check">
+      <input type="checkbox" name="recurring">
+      <span>Repete todo mês <small>Salário, aluguel, assinaturas. Entra automaticamente nos meses seguintes e na projeção.</small></span>
+    </label>
+
+    <p class="form-error" id="tx-error" role="alert" hidden></p>
+
+    <div class="row end">
+      <button type="button" class="btn" id="tx-cancel">Cancelar</button>
+      <button type="submit" class="btn primary" id="tx-save">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ IMPORTAÇÃO DE PLANILHA ============ -->
+<dialog id="import-dialog" aria-labelledby="imp-title">
+  <form id="import-form">
+    <h2 id="imp-title">Importar planilha</h2>
+    <p id="imp-summary"></p>
+    <ul class="skipped" id="imp-skipped"></ul>
+    <fieldset class="modes">
+      <legend>O que fazer com os dados atuais?</legend>
+      <label class="check"><input type="radio" name="mode" value="merge" checked><span>Adicionar aos atuais <small>Lançamentos idênticos aos que já existem são ignorados.</small></span></label>
+      <label class="check"><input type="radio" name="mode" value="replace"><span>Substituir tudo <small>Apaga os dados atuais e fica só com os da planilha.</small></span></label>
+    </fieldset>
+    <div class="row end">
+      <button type="button" class="btn" id="imp-cancel">Cancelar</button>
+      <button type="submit" class="btn primary">Importar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="js/core.js"></script>
+<script src="js/forecast.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/xlsx.js"></script>
+<script src="js/sheetio.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
