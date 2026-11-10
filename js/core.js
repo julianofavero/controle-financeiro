@@ -222,7 +222,8 @@
       if (reloading) return chain;
       reloading = true;
       return remote(async () => {
-        try { state = await fetchState(); notify(); } finally { reloading = false; }
+        // se a releitura também falhar (ex.: sem internet), mantém o estado atual e não insiste
+        try { state = await fetchState(); notify(); } catch (e) { /* sem rede: já avisamos */ } finally { reloading = false; }
       });
     },
 
