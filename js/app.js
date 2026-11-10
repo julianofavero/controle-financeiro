@@ -57,6 +57,7 @@
   /* ================= navegação ================= */
   function currentFromHash() {
     const h = location.hash.replace('#', '');
+    if (h === 'usuarios' && !isAdmin()) return 'dashboard';
     return Object.prototype.hasOwnProperty.call(VIEWS, h) ? h : 'dashboard';
   }
 
