@@ -170,7 +170,7 @@
     pending++;
     chain = chain
       .then(job)
-      .catch((err) => errorHandler(err))
+      .catch((err) => { try { errorHandler(err); } catch (e) { /* o contador abaixo precisa rodar */ } })
       .then(() => { pending--; });
     return chain;
   }
