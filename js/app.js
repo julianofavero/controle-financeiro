@@ -76,6 +76,7 @@
       lancamentos: 'Todas as entradas e saídas registradas',
       orcamentos: 'Controle quanto gastar em cada categoria',
       ajustes: 'Saldo inicial, backup e dados',
+      usuarios: 'Crie e gerencie as contas de acesso',
     };
     $('#page-sub').textContent = subs[view];
 
@@ -83,6 +84,7 @@
     if (view === 'lancamentos') renderTransactions();
     if (view === 'orcamentos') renderBudgets();
     if (view === 'ajustes') renderSettings();
+    if (view === 'usuarios') A.admin.render();
   }
 
   /* ================= dashboard ================= */
