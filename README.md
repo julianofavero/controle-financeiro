@@ -139,7 +139,7 @@ Os scripts são carregados na ordem em que aparecem no `index.html`, sem módulo
 
 ## Requisitos
 
-Navegador atual: Chrome, Edge, Firefox ou Safari em versões recentes. A leitura de planilhas `.xlsx` depende do `DecompressionStream`, disponível a partir do Chrome 80, Firefox 113 e Safari 16.4. Sem ele, o resto do site funciona, mas a importação de planilhas não.
+Navegador atual: Chrome, Edge, Firefox ou Safari em versões recentes. A leitura de planilhas `.xlsx` depende do `DecompressionStream`, com formato `deflate-raw`, disponível a partir do Chrome 103, Firefox 113 e Safari 16.4. Sem ele, o resto do site funciona, mas a importação de planilhas não.
 
 ## Limitações conhecidas
 
