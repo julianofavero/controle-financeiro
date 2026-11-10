@@ -11,7 +11,10 @@
     lancamentos: 'Lançamentos',
     orcamentos: 'Orçamentos',
     ajustes: 'Ajustes',
+    usuarios: 'Usuários',
   };
+  let profile = null; // conta logada (definida em A.start)
+  const isAdmin = () => !!profile && profile.role === 'admin';
   let view = 'dashboard';
   const filters = { month: 'cur', type: '', query: '' };
 

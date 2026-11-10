@@ -105,14 +105,14 @@
     } else if (btn.dataset.act === 'role') {
       const to = u.role === 'admin' ? 'user' : 'admin';
       const msg = to === 'admin'
-        ? `Tornar ${name} administrador? Ela poderá criar, desativar e excluir usuários.`
+        ? `Tornar ${name} administrador? Esse usuário poderá criar, desativar e excluir contas.`
         : `Tirar o acesso de administrador de ${name}?`;
       if (confirm(msg)) run(() => api.admin('update', { id: u.id, role: to }), 'Perfil atualizado');
     } else if (btn.dataset.act === 'active') {
-      if (u.active && !confirm(`Desativar ${name}? Ela não conseguirá mais entrar, mas os dados ficam guardados e podem ser reativados.`)) return;
+      if (u.active && !confirm(`Desativar ${name}? Essa conta não conseguirá mais entrar, mas os dados ficam guardados e podem ser reativados.`)) return;
       run(() => api.admin('update', { id: u.id, active: !u.active }), u.active ? 'Usuário desativado' : 'Usuário reativado');
     } else if (btn.dataset.act === 'del') {
-      if (confirm(`Excluir ${name}? A conta e TODOS os lançamentos dela serão apagados e isso não pode ser desfeito.`)) {
+      if (confirm(`Excluir ${name}? A conta e TODOS os lançamentos dessa conta serão apagados e isso não pode ser desfeito.`)) {
         run(() => api.admin('delete', { id: u.id }), 'Usuário excluído');
       }
     }
