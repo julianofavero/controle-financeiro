@@ -9,7 +9,38 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="app">
+
+<!-- ============ ACESSO (login) ============ -->
+<div class="auth" id="auth">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--s-in)"/><path d="M8 21l5-6 4 3 7-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Controle Financeiro</span>
+    </div>
+
+    <p class="muted" id="auth-loading" role="status">Carregando…</p>
+
+    <form id="login-form" class="dform" autocomplete="on" hidden>
+      <h1>Entrar</h1>
+      <p class="muted">Use o usuário e a senha criados pelo administrador.</p>
+      <label>Usuário
+        <input type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="32" required>
+      </label>
+      <label>Senha
+        <input type="password" name="password" autocomplete="current-password" maxlength="72" required>
+      </label>
+      <p class="form-error" id="login-error" role="alert" hidden></p>
+      <button type="submit" class="btn primary" id="login-submit">Entrar</button>
+    </form>
+
+    <div id="auth-setup" hidden>
+      <h1>Configuração pendente</h1>
+      <p class="muted">Falta informar a chave pública do Supabase. Abra <b>js/config.js</b> e preencha <b>supabaseKey</b> com a chave publishable (ou anon) do projeto. Os passos completos estão no README, na seção "Contas e dados (Supabase)".</p>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app" hidden>
 
   <aside class="side">
     <div class="brand">
