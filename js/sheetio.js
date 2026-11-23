@@ -226,7 +226,13 @@
       }
       if (found.date !== undefined && found.value !== undefined) { hi = r; cols = found; break; }
     }
-    if (hi < 0) throw new Error('Não achei as colunas "Data" e "Valor" na aba de lançamentos. Baixe o modelo para ver o formato.');
+    if (hi < 0) {
+      const m = parseMonthly(sheets);
+      if (m.months.length) {
+        return { transactions: m.transactions.slice(0, 20000), skipped: m.skipped, budgets: {}, opening: null, sheetName: `${m.months.length} abas mensais` };
+      }
+      throw new Error('Não achei as colunas "Data" e "Valor" na aba de lançamentos, nem abas mensais (jan26, fev26…). Baixe o modelo para ver o formato.');
+    }
 
     const transactions = [];
     const skipped = [];
