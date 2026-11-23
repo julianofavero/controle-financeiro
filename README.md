@@ -119,6 +119,7 @@ Em **Ajustes** (e na tela **Lançamentos**) há três ações:
 Regras da importação:
 
 - A aba de lançamentos precisa ter as colunas **Data** e **Valor**. As colunas são reconhecidas pelo nome do cabeçalho, em qualquer ordem. Tipo, Descrição, Categoria e Mensal são opcionais.
+- **Planilha com uma aba por mês:** se não houver colunas Data e Valor, o app procura abas com nome de mês (`jan26`, `fev26`, `mar 2026`…). Em cada aba lê a tabela `nome | saldo+ | saldo- | …` até a linha `total`: `saldo+` vira entrada e `saldo-` vira saída, datadas no dia 1 do mês. As tabelas de detalhe abaixo (cartões, extras) são ignoradas, porque o total delas já aparece como uma linha da tabela principal. A categoria é deduzida do nome (aluguel → Moradia, IPTV → Assinaturas…); o que não for reconhecido vai para Outros.
 - **Data:** aceita datas do Excel e texto nos formatos `10/11/2026` ou `2026-11-10`.
 - **Valor:** aceita número ou texto como `1.234,56` e `R$ 80,00`.
 - **Tipo:** `Entrada` ou `Saída`. Sem a coluna Tipo, valores negativos viram saídas.
