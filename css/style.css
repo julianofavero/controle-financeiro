@@ -121,6 +121,15 @@ button, input, select { font: inherit; color: inherit; }
 .main { padding: 28px 32px 48px; min-width: 0; max-width: 1280px; width: 100%; }
 .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
 .top .muted { margin-top: 2px; }
+.top-title { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.home-btn {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+}
+.home-btn:hover { background: var(--hover); }
+.home-btn[hidden] { display: none; }
+.home-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .actions { display: flex; gap: 8px; }
 
 /* ===== Components ===== */
