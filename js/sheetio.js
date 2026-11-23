@@ -127,6 +127,89 @@
     recurring: ['mensal', 'recorrente', 'recorrencia', 'repete'],
   };
 
+  /* ---------- formato "uma aba por mês" ----------
+   * Abas com nome de mês (jan26, fev26, "mar 2026"…), cada uma com uma tabela
+   * "nome | saldo+ | saldo- | …" que termina na linha "total". Lê só essa
+   * tabela: as faturas de cartão e o "extra" já entram como uma linha com o
+   * total, então as tabelas de detalhe abaixo dela são ignoradas (senão o
+   * valor seria contado duas vezes). Sem dia na planilha, usa o dia 1. */
+  const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+  function monthOfSheet(name) {
+    const r = /^(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[a-z]*[\s\/\-'._]*(\d{2}|\d{4})$/.exec(norm(name));
+    if (!r) return null;
+    const y = +r[2] < 100 ? 2000 + +r[2] : +r[2];
+    return `${y}-${String(MONTHS.indexOf(r[1]) + 1).padStart(2, '0')}`;
+  }
+
+  const OUT_RULES = [
+    [/fatura|nubank|inter\b|cartao|credito/, 'Cartão de crédito'],
+    [/aluguel|condominio|\bluz\b|energia|agua|\bap\b|apartamento|iptu|moradia/, 'Moradia'],
+    [/gasolina|combustivel|carro|moto|uber|onibus|estacionamento|pedagio|sem parar/, 'Transporte'],
+    [/dentista|odonto|medic|farmacia|saude|plano de saude|terapia|psic/, 'Saúde'],
+    [/faculdade|curso|escola|mensalidade|livro/, 'Educação'],
+    [/iptv|internet|netflix|spotify|streaming|assinatura|gympass|academia|celular|telefone/, 'Assinaturas'],
+    [/mercado|restaurante|alimenta|ifood|lanche|padaria|supermercado/, 'Alimentação'],
+    [/viagem|lazer|cinema|passeio|parque|show/, 'Lazer'],
+    [/imposto|\bir\b|inss|das\b|cnpj|mei\b|darf/, 'Impostos'],
+    [/roupa|guarda-roupa|presente|compra|vestido|eletro/, 'Compras'],
+  ];
+  const categoryOf = (type, name) => {
+    const n = norm(name);
+    if (type === 'in') return /salario|ordenado|pagamento/.test(n) ? 'Salário' : 'Outros';
+    const rule = OUT_RULES.find(([re]) => re.test(n));
+    return rule ? rule[1] : 'Outros';
+  };
+
+  function parseMonthly(sheets) {
+    const transactions = [];
+    const skipped = [];
+    const months = [];
+    for (const sh of sheets) {
+      const month = monthOfSheet(sh.name);
+      if (!month) continue;
+
+      // cabeçalho: coluna "nome" + colunas "saldo+" (entrada) e "saldo-" (saída)
+      let hi = -1, cName = -1, cIn = -1, cOut = -1;
+      for (let r = 0; r < Math.min(10, sh.rows.length); r++) {
+        const names = (sh.rows[r] || []).map(norm);
+        const n = names.findIndex((x) => x === 'nome' || x === 'item' || x === 'descricao');
+        const i = names.findIndex((x) => /^saldo\s*\+$|^entrada/.test(x));
+        const o = names.findIndex((x) => /^saldo\s*-$|^saida/.test(x));
+        if (n >= 0 && (i >= 0 || o >= 0)) { hi = r; cName = n; cIn = i; cOut = o; break; }
+      }
+      if (hi < 0) { skipped.push({ row: 1, reason: `aba "${sh.name}": não achei a tabela nome / saldo+ / saldo-` }); continue; }
+
+      months.push(month);
+      for (let r = hi + 1; r < sh.rows.length; r++) {
+        const row = sh.rows[r];
+        if (!row) continue;
+        const name = String(row[cName] ?? '').trim();
+        if (norm(name) === 'total') break;
+        for (const [col, type] of [[cIn, 'in'], [cOut, 'out']]) {
+          if (col < 0) continue;
+          const raw = row[col];
+          if (raw === null || raw === undefined || raw === '') continue;
+          const value = parseMoney(raw);
+          if (value === null) { skipped.push({ row: r + 1, reason: `aba "${sh.name}": valor inválido` }); continue; }
+          if (value === 0) continue;
+          // a tabela usa saldo+ / saldo- como colunas: um valor negativo vira o lado oposto
+          const t = value < 0 ? (type === 'in' ? 'out' : 'in') : type;
+          const desc = name.slice(0, 80);
+          transactions.push({
+            type: t,
+            date: `${month}-01`,
+            value: Math.round(Math.abs(value) * 100) / 100,
+            desc: desc ? desc.charAt(0).toUpperCase() + desc.slice(1) : '',
+            category: categoryOf(t, name),
+            recurring: false,
+          });
+        }
+      }
+    }
+    return { transactions, skipped, months };
+  }
+
   async function parse(buffer) {
     const sheets = await A.xlsx.read(buffer);
     const find = (prefix) => sheets.find((s) => norm(s.name).startsWith(prefix));
