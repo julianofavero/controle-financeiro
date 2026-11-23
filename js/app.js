@@ -67,6 +67,7 @@
     $$('.nav a').forEach((a) => {
       if (a.dataset.view === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    $('#home-btn').hidden = view === 'dashboard';
     $('#page-title').textContent = VIEWS[view];
     document.title = `${VIEWS[view]} · Controle Financeiro`;
     A.charts.hideTip();
