@@ -148,10 +148,10 @@
     [/gasolina|combustivel|carro|moto|uber|onibus|estacionamento|pedagio|sem parar/, 'Transporte'],
     [/dentista|odonto|medic|farmacia|saude|plano de saude|terapia|psic/, 'Saúde'],
     [/faculdade|curso|escola|mensalidade|livro/, 'Educação'],
-    [/iptv|internet|netflix|spotify|streaming|assinatura|gympass|academia|celular|telefone/, 'Assinaturas'],
+    [/iptv|internet|netflix|spotify|streaming|assinatura|gympass|academia|celular|telefone|intercel/, 'Assinaturas'],
     [/mercado|restaurante|alimenta|ifood|lanche|padaria|supermercado/, 'Alimentação'],
     [/viagem|lazer|cinema|passeio|parque|show/, 'Lazer'],
-    [/imposto|\bir\b|inss|das\b|cnpj|mei\b|darf/, 'Impostos'],
+    [/imposto|\bir\b|inss|\bdas\b|cnpj|\bmei\b|darf/, 'Impostos'],
     [/roupa|guarda-roupa|presente|compra|vestido|eletro/, 'Compras'],
   ];
   const categoryOf = (type, name) => {
